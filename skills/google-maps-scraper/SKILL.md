@@ -23,3 +23,17 @@ Remove `--dry-run` to execute. Successful pages are cached in SQLite; do not run
 The endpoint is `/places`; do not add paid detail/review enrichment implicitly. Each successful page used one credit in the original workflow; verify current Serper billing before quoting costs. The cap bounds attempts, not dollars or unique businesses. Search results are not exhaustive; neighboring locations overlap, and country/location terms are not strict geographic filters. Full final pages indicate possible truncation. Do not describe results as all businesses in an area.
 
 CIDs remain strings. Do not deduplicate by domain alone: chains have multiple branches. CSV prefixes formula-like strings (including international phone numbers) with an apostrophe; JSON preserves the original values. The export contains businesses, not owner contacts or verified emails. Qualification, relationship exclusions, contact enrichment, and campaign enrollment are separate tasks, outside this skill's authorization.
+
+
+## Bundled postal locations
+
+For country/state/city coverage, use `scripts/locations.py --list`, then generate a scraper-ready CSV from `assets/locations/`. No network or API key is needed. For example:
+
+```bash
+python3 <skill-folder>/scripts/locations.py --countries US --region CA \
+  --limit 25 --output output/california.csv
+```
+
+Pass the CSV to `scrape.py --locations-file output/california.csv`. City/region matching is exact but ignores case and accents; region also matches source codes. Use `--postal-prefix` for a narrower area, `--language` for multilingual regions, and `--limit 0` only when all matching codes are intended. The default limit is 25 globally, not per country; pilot countries separately. Existing output files are not overwritten.
+
+Read `assets/locations/README.md` before claiming coverage or redistributing data. US plus 16 European countries are bundled with GeoNames attribution and checksums. UK/NL are postcode districts/prefixes. Germany excludes codes without a populated-place match; other sources can include special-use codes. The selector preserves leading zeros and chooses one locality per postal code after filtering; this can omit other settlements sharing the code. A postal list is not proof of complete business coverage. Do not infer residential status, population, or geographic completeness from this catalog.

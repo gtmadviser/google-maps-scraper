@@ -1,0 +1,2 @@
+# Preserve exact dataset bytes so manifest checksums work across platforms.
+*.csv -text

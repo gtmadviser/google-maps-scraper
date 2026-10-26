@@ -47,7 +47,41 @@ python3 skills/google-maps-scraper/scripts/scrape.py \
   --max-pages 3 --max-requests 30 --output output/coffee
 ```
 
-CSV locations can be cities, neighborhoods, or postal codes. Leading zeros are preserved. Each row can have its own country and language. Duplicate queries are removed before requests are made. The example is a small DACH pilot, not a complete postal-code database. Bring your own licensed location list for broader coverage.
+CSV locations can be cities, neighborhoods, or postal codes. Leading zeros are preserved. Each row can have its own country and language. Duplicate queries are removed before requests are made. The example is a small DACH pilot. For broader coverage, use the bundled US and European datasets below, or bring your own licensed location list.
+
+## Built-in US and European postal locations
+
+**US ZIPs and postal locations for 16 European countries are included—no extra download or account needed.** Germany, Austria, Switzerland, France, Spain, Italy, Netherlands, Belgium, UK, Poland, Portugal, Denmark, Sweden, Norway, Finland, and Czechia.
+
+```bash
+# See country coverage and counts
+python3 skills/google-maps-scraper/scripts/locations.py --list
+
+# US: a 25-ZIP California pilot (use --city 'San Francisco' for a specific city)
+python3 skills/google-maps-scraper/scripts/locations.py \
+  --countries US --region CA --limit 25 --output output/california.csv
+
+# Germany: Berlin's postal locations
+python3 skills/google-maps-scraper/scripts/locations.py \
+  --countries DE --city Berlin --limit 0 --output output/berlin.csv
+
+# France: a small Paris pilot
+python3 skills/google-maps-scraper/scripts/locations.py \
+  --countries FR --city Paris --limit 10 --output output/paris.csv
+
+# Preview a scrape using the generated US list
+python3 skills/google-maps-scraper/scripts/scrape.py \
+  --query 'dentist' --locations-file output/california.csv \
+  --max-pages 3 --max-requests 30 --output output/california-dentists --dry-run
+```
+
+Remove `--dry-run` to scrape with your Serper key. The selector makes no API calls. Its default is **25 distinct postal codes**, sorted rather than randomly sampled. `--limit 0` explicitly selects all matches; `--postal-prefix 90` narrows to a postal prefix. `--region` accepts a state/region name or code; `--city` uses exact source names, ignoring case and accents. `--language` overrides each country's default. Query categories are not translated automatically.
+
+A national list can be large: the selector prints the number of locations and maximum pages at three pages/location. The scraper's request cap still applies and resets on each invocation. Always review the pilot before expanding. A single postcode can cover multiple settlements, so one query per code still does not guarantee exhaustive coverage.
+
+The US snapshot contains **41,488 ZIPs**, cross-checked against Eric's 42,735-row CSV (41,340 shared codes). Germany contains **8,159 filtered codes**. UK and Netherlands datasets contain postal districts/prefixes rather than full delivery postcodes. Other source datasets may include special-use codes. These are research grids, not authoritative postal registries.
+
+See [country counts, source attribution, verification and limitations](skills/google-maps-scraper/assets/locations/README.md). Data comes from **GeoNames under CC BY 4.0**; code remains MIT. Source URLs and checksums are bundled for every country.
 
 ## Costs and limits
 
@@ -108,4 +142,4 @@ Tests use synthetic data and mocked HTTP, not your credits. Open an issue or pul
 
 ## License
 
-[MIT](LICENSE) covers this repository's code, documentation, and skill. You can use, modify, and redistribute them, including commercially, with the license notice. The license does not grant rights to third-party search results or location datasets.
+[MIT](LICENSE) covers this repository's code, authored documentation, and skill instructions. Bundled GeoNames location CSVs are separately licensed under [CC BY 4.0](skills/google-maps-scraper/assets/locations/README.md). You can use, modify, and redistribute them, including commercially, with the license notice. The license does not grant rights to third-party search results or location datasets.
